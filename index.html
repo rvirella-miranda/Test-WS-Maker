@@ -43,6 +43,9 @@ nav.tabs{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
 nav.tabs button{background:none;border:0;padding:8px 12px;cursor:pointer;font-weight:500;color:var(--ink);border-bottom:2px solid transparent}
 nav.tabs button.on{font-weight:700;border-bottom-color:var(--lav-d)}
 nav.tabs button:hover{color:var(--lav-d)}
+.sync-chip{border:1.5px solid var(--sage-d);background:var(--sage-bg);color:#3d5230;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer}
+.sync-chip.saving{border-color:var(--lav-d);background:var(--lav);color:var(--lav-d)}
+.sync-chip.error{border-color:var(--pink-d);background:var(--pink);color:var(--pink-d)}
 
 main{max-width:1400px;margin:0 auto;padding:28px 24px 80px}
 .view{display:none}.view.on{display:block}
@@ -208,7 +211,7 @@ pre{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;
 .f-clean .qnum{font-family:Poppins;font-size:13px}
 .qtext{flex:1;min-width:0}
 .pts{flex:none;font-size:.82em;color:#666}
-.qimgw{display:flex;min-height:0;flex:0 1 auto}
+.qimgw{display:flex;align-items:flex-start;flex:1 1 0;min-height:0;overflow:hidden}
 .qimgw img{height:auto;max-height:100%;object-fit:contain;object-position:left top;min-height:0}
 .pchoices{display:grid;gap:4px 18px;padding-left:4px}
 .pchoices.c2{grid-template-columns:1fr 1fr}
@@ -262,6 +265,7 @@ pre{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;
       <button data-act="go" data-v="saved">Saved</button>
       <button data-act="go" data-v="help">Backup &amp; Help</button>
     </nav>
+    <button class="sync-chip" id="syncChip" data-act="go" data-v="help" hidden></button>
   </div>
 </header>
 
@@ -339,7 +343,7 @@ let UI={view:'home',bankId:null,sel:new Set(),search:'',tag:'',pBank:'all',pSear
 let QM={};
 function reindex(){QM={};S.banks.forEach(b=>b.questions.forEach(q=>QM[q.id]={q,b}))}
 let saveT;
-function persist(){reindex();clearTimeout(saveT);saveT=setTimeout(async()=>{if(!DB.db)return;try{await DB.set('state',S)}catch(e){toast('Could not save — storage may be full. Download a backup!')}},150)}
+function persist(){reindex();S.updated=Date.now();if(typeof syncSoon==='function')syncSoon();clearTimeout(saveT);saveT=setTimeout(async()=>{if(!DB.db)return;try{await DB.set('state',S)}catch(e){toast('Could not save — storage may be full. Download a backup!')}},150)}
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&DB.db){clearTimeout(saveT);DB.set('state',S).catch(()=>{})}});
 const allTags=qs=>[...new Set(qs.flatMap(q=>q.tags||[]))].sort();
 const curBank=()=>S.banks.find(b=>b.id===UI.bankId);
@@ -510,8 +514,8 @@ function renderBuild(){
     <div class="build-left">
       <div class="actionbar">
         <button class="btn dark" data-act="print">🖨 Print / Save PDF</button>
-        <button class="btn sage" data-act="saveTest">${d.id?'Save changes':'Save'}</button>
-        ${d.id?'<button class="btn" data-act="saveAsNew">Save as copy</button>':''}
+        <button class="btn sage" data-act="saveTest" title="Saves a separate copy you can reopen from the Saved page">Save new copy</button>
+        ${d.id&&S.tests.some(t=>t.id===d.id)?'<button class="btn" data-act="updateTest" title="Overwrite the saved copy you opened">Update saved copy</button>':''}
         <button class="btn ghost" data-act="newTest">New</button>
       </div>
       <div class="card tape" style="--tape:#d98da2">
@@ -594,7 +598,7 @@ function renderSaved(){
     <div class="card saved-card tape" style="--tape:${tapes[i%5]};transform:rotate(${[-.8,.6,-.3,.9][i%4]}deg)">
       <span class="chip ${col[t.type]||''}">${esc(t.type)}</span>
       <h3>${fmt(t.title)}</h3>
-      <div class="muted" style="font-size:12px">${t.items.length} questions · updated ${new Date(t.updated||Date.now()).toLocaleDateString()}</div>
+      <div class="muted" style="font-size:12px">${t.items.length} questions · saved ${new Date(t.updated||Date.now()).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}</div>
       <div class="acts"><button class="btn sm dark" data-act="openTest" data-id="${t.id}">Open</button><button class="btn sm" data-act="dupTest" data-id="${t.id}">Duplicate</button><button class="btn sm ghost danger" data-act="delTest" data-id="${t.id}">Delete</button></div>
     </div>`).join('')}</div>`:`<div class="card empty-state" style="margin-top:20px"><div class="serif">Nothing saved yet.</div><p>Build something on the Build &amp; Print page and click <b>Save</b>.</p></div>`}`;
 }
@@ -603,10 +607,29 @@ function renderHelp(){
   $('#view-help').innerHTML=`
   <div class="eyebrow">Keep it safe</div><h2 class="display">Backup &amp; Help</h2>
   <div class="help-grid">
+    <div class="card tape" style="--tape:#86b0d8;grid-column:1/-1">
+      <h3>Use it on any computer (GitHub sync)</h3>
+      ${SYNC.cfg?`
+        <p>Your question banks and saved tests are saving to the private repository <b>${esc(SYNC.cfg.repo)}</b>. On another computer, open Test Maker, come to this page, and connect with the same repository and token.</p>
+        <p id="syncStatus" style="font-weight:600">${syncStatusText()}</p>
+        <div class="row"><button class="btn dark" data-act="syncNow">Sync now</button><button class="btn ghost danger" data-act="syncOff">Disconnect this computer</button></div>`:`
+        <p>Right now your work is saved <b>only in this browser on this computer</b>. To use it from any computer, connect a <b>private</b> GitHub repository. This is a one-time setup, and then each computer just needs the same two things pasted below.</p>
+        <ol>
+          <li>On github.com, click <b>+ → New repository</b>. Name it <code>test-maker-data</code>, choose <b>Private</b>, check <b>Add a README file</b>, and click <b>Create repository</b>.</li>
+          <li>Click your profile picture → <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>.
+            Name it “Test Maker”, pick an expiration (up to a year), choose <b>Only select repositories → test-maker-data</b>, then under <b>Repository permissions</b> set <b>Contents</b> to <b>Read and write</b>. Click <b>Generate token</b> and copy it.</li>
+          <li>Paste it below and click <b>Connect</b>. GitHub only shows the token once, so keep a copy somewhere safe (like a password manager) for your other computers.</li>
+        </ol>
+        <div class="row" style="align-items:flex-end;margin-top:10px">
+          <label class="field grow" style="margin:0;min-width:200px"><span>Repository</span><input type="text" id="syRepo" placeholder="yourname/test-maker-data" autocomplete="off"></label>
+          <label class="field grow" style="margin:0;min-width:200px"><span>Token</span><input type="password" id="syToken" placeholder="github_pat_…" autocomplete="off"></label>
+          <button class="btn dark" id="syGo" data-act="syncGo">Connect</button>
+        </div>
+        <p class="muted" style="font-size:12px;margin-bottom:0">The token can only read and write that one private repository, and it’s stored only in this browser. Keep the repository private so students can’t see your answer keys.</p>`}
+    </div>
     <div class="card tape" style="--tape:#d98da2">
-      <h3>Your data</h3>
-      <p>Everything you make is saved <b>in this browser on this computer</b> — nothing is uploaded to GitHub, so your question banks stay private.</p>
-      <p>Download a backup now and then (and before switching computers or clearing your browser).</p>
+      <h3>Backup file</h3>
+      <p>You can also download everything as one file, and restore it later or on another computer. It’s a good idea to do this now and then even if you use GitHub sync.</p>
       <div class="row"><button class="btn dark" data-act="backup">Download full backup</button><button class="btn" data-act="restore">Restore from backup</button></div>
     </div>
     <div class="card tape" style="--tape:#a7b98b">
@@ -644,6 +667,7 @@ function renderHelp(){
         <li>In the print window set <b>Margins: None</b> (or Default) and <b>Scale: 100%</b>.</li>
         <li>Choose <b>Save as PDF</b> to keep a file, or print directly.</li>
         <li>Turn on “Background graphics” if the yellow sparkle is missing.</li>
+        <li>Use Test Maker in its own browser tab (bookmark it). If it’s embedded inside another page, like a Google Site, browsers block printing there.</li>
         <li>Too crowded? Switch Box height to <i>Roomy</i> or make a question <i>Full</i>.</li>
       </ul>
     </div>
@@ -663,6 +687,21 @@ function openModal(html,wide){const m=$('#modal');m.innerHTML=`<div class="mbox 
 function closeModal(){$('#modal').classList.remove('on');$('#modal').innerHTML='';document.body.style.overflow='';window.onpaste=null}
 $('#modal').addEventListener('mousedown',e=>{if(e.target.id==='modal')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#modal').classList.contains('on'))closeModal()});
+/* In-page replacements for native confirm dialogs: browsers silently ignore them (and print) when the
+   page is embedded (Google Sites, previews), which made Clear, Delete and Print do nothing. */
+function confirmBox(msg,{ok='OK',cancel='Cancel',danger=false,title='Are you sure?'}={}){
+  return new Promise(res=>{
+    const m=openModal(`<h3>${esc(title)}</h3><p style="margin:0">${msg}</p><div class="mfoot"><button class="btn ghost" id="cfNo">${esc(cancel)}</button><button class="btn ${danger?'danger':'dark'}" id="cfOk">${esc(ok)}</button></div>`);
+    const done=v=>{closeModal();res(v)};
+    $('#cfOk',m).onclick=()=>done(true);$('#cfNo',m).onclick=()=>done(false);$('#cfOk',m).focus();
+  });
+}
+function choose(title,msg,opts){
+  return new Promise(res=>{
+    const m=openModal(`<h3>${esc(title)}</h3><p style="margin:0">${msg}</p><div class="mfoot" style="flex-wrap:wrap">${opts.map((o,i)=>`<button class="btn ${o.cls||''}" data-i="${i}">${esc(o.label)}</button>`).join('')}</div>`);
+    $$('.mfoot button',m).forEach(b=>b.onclick=()=>{closeModal();res(opts[+b.dataset.i].value)});
+  });
+}
 function ask(title,label,value=''){
   return new Promise(res=>{
     const m=openModal(`<h3>${esc(title)}</h3><label class="field"><span>${esc(label)}</span><input type="text" id="askIn" value="${esc(value)}"></label><div class="mfoot"><button class="btn ghost" id="askNo">Cancel</button><button class="btn dark" id="askOk">OK</button></div>`);
@@ -780,6 +819,131 @@ Answer: B"></textarea>
   };
 }
 
+/* ================= printing when embedded ================= */
+const FRAMED=(()=>{try{return window.self!==window.top}catch(e){return true}})();
+function framedHelp(){
+  const url=/^https?:/.test(location.protocol)?location.href.split('#')[0]+'#build':'';
+  openModal(`<h3>Printing is blocked here</h3>
+    <p>Test Maker is showing inside another page (like a Google Site or a preview window), and browsers don’t allow printing from there.</p>
+    <p>Open Test Maker in its own tab to print. Bookmark that tab and use it from now on.</p>
+    <div class="mfoot">${url?`<a class="btn dark" href="${esc(url)}" target="_blank" rel="noopener">Open in its own tab</a>`:''}<button class="btn ghost" id="fhTry">Try printing anyway</button><button class="btn ghost" id="fhNo">Close</button></div>`);
+  $('#fhTry').onclick=()=>{closeModal();window.print()};$('#fhNo').onclick=closeModal;
+}
+// Opens the finished pages in a new window and prints from there, which works in most embeds.
+function printFromFrame(){
+  const pages=$('#pages');if(!pages)return;
+  let w=null;try{w=window.open('','_blank')}catch(e){}
+  if(!w)return framedHelp();
+  const css=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
+  const links=[...document.querySelectorAll('link[rel=stylesheet]')].map(l=>`<link rel="stylesheet" href="${l.href}">`).join('');
+  w.document.open();
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(plain(S.draft.title))}</title>${links}<style>${css}
+    body{background:#e9e4ef!important}#pages{zoom:1!important;padding:20px 0}#pages .page{margin:0 auto 20px;box-shadow:0 3px 14px rgba(0,0,0,.15)}
+    .pbar{position:sticky;top:0;z-index:5;display:flex;gap:14px;align-items:center;justify-content:center;padding:10px;background:#fff;border-bottom:1px solid #ddd;font:13px Poppins,sans-serif}
+    @media print{.pbar{display:none!important}#pages{padding:0}#pages .page{margin:0;box-shadow:none}}</style></head>
+    <body><div class="pbar"><button class="btn dark" onclick="print()">Print / Save as PDF</button><span>If nothing opens, press Ctrl+P (Cmd+P on a Mac).</span></div>
+    <div id="pages">${pages.innerHTML}</div>
+    <script>(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>setTimeout(()=>{try{print()}catch(e){}},500))<\/script></body></html>`);
+  w.document.close();
+}
+
+/* ================= GitHub sync (use it on any computer) ================= */
+// Data lives in a PRIVATE repo the teacher owns, written with a fine-grained token that only
+// has Contents read/write on that one repo. The token stays in this browser's localStorage.
+const SYNC={cfg:null,sha:null,dirty:false,busy:false,again:false,t:null,state:'off',last:0,err:''};
+try{SYNC.cfg=JSON.parse(localStorage.getItem('tmSync')||'null')}catch(e){}
+function syncSaveCfg(){try{SYNC.cfg?localStorage.setItem('tmSync',JSON.stringify(SYNC.cfg)):localStorage.removeItem('tmSync')}catch(e){}}
+const b64=str=>{const by=new TextEncoder().encode(str);let bin='';for(let i=0;i<by.length;i+=0x8000)bin+=String.fromCharCode.apply(null,by.subarray(i,i+0x8000));return btoa(bin)};
+async function gh(method,path,body,raw){
+  return fetch('https://api.github.com'+path,{method,cache:'no-store',headers:Object.assign({Authorization:'Bearer '+SYNC.cfg.token,Accept:raw?'application/vnd.github.raw+json':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
+}
+const fileUrl=()=>`/repos/${SYNC.cfg.repo}/contents/${SYNC.cfg.path}`;
+const netMsg=e=>e.message==='Failed to fetch'?'Can’t reach GitHub (offline?). Your work is still saved on this computer.':e.message;
+async function syncPull(){
+  const m=await gh('GET',fileUrl());
+  if(m.status===404)return null;
+  if(!m.ok)throw new Error(m.status===401?'GitHub rejected the token (it may have expired).':'GitHub said '+m.status);
+  const meta=await m.json();
+  const r=await gh('GET',fileUrl(),null,true);if(!r.ok)throw new Error('GitHub said '+r.status);
+  return {data:JSON.parse(await r.text()),sha:meta.sha};
+}
+const syncPayload=()=>({app:'miranda-test-maker',version:1,updated:S.updated||Date.now(),banks:S.banks,tests:S.tests,draft:S.draft});
+function applyRemote(d){S.banks=d.banks||[];S.tests=d.tests||[];S.draft=Object.assign(newDraft(),d.draft||{});S.updated=d.updated||Date.now();reindex();if(!S.banks.some(b=>b.id===UI.bankId))UI.bankId=S.banks[0]&&S.banks[0].id;if(DB.db)DB.set('state',S).catch(()=>{})}
+function mergeRemote(d){ // only used if two computers saved at the same moment: keep everything from both
+  (d.banks||[]).forEach(rb=>{const lb=S.banks.find(b=>b.id===rb.id);if(!lb){S.banks.push(rb);return}
+    (rb.questions||[]).forEach(q=>{if(!lb.questions.some(x=>x.id===q.id))lb.questions.push(q)})});
+  (d.tests||[]).forEach(t=>{if(!S.tests.some(x=>x.id===t.id))S.tests.push(t)});reindex();
+}
+function syncStatusText(){
+  if(SYNC.state==='error')return `<span style="color:var(--pink-d)">⚠ ${esc(SYNC.err||'Could not reach GitHub.')}</span>`;
+  if(SYNC.state==='saving')return 'Saving to GitHub…';
+  return SYNC.last?`✓ Synced at ${new Date(SYNC.last).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`:'✓ Connected';
+}
+function setSync(state,err){
+  SYNC.state=state;SYNC.err=err||'';
+  const c=$('#syncChip');if(c){c.hidden=state==='off';c.className='sync-chip '+state;c.textContent={ok:'☁ Synced',saving:'☁ Saving…',error:'⚠ Not synced',off:''}[state]}
+  const st=$('#syncStatus');if(st)st.innerHTML=syncStatusText();
+}
+function syncSoon(){if(!SYNC.cfg)return;SYNC.dirty=true;setSync('saving');clearTimeout(SYNC.t);SYNC.t=setTimeout(syncPush,2000)}
+async function syncPush(){
+  if(!SYNC.cfg)return;
+  if(SYNC.busy){SYNC.again=true;return}
+  SYNC.busy=true;setSync('saving');
+  try{
+    const put=()=>gh('PUT',fileUrl(),Object.assign({message:'Test Maker update',content:b64(JSON.stringify(syncPayload()))},SYNC.sha?{sha:SYNC.sha}:{}));
+    let r=await put();
+    if(r.status===409||r.status===422){ // changed on another computer since this one last looked
+      const rem=await syncPull();SYNC.sha=rem?rem.sha:null;
+      if(rem){mergeRemote(rem.data);if(DB.db)DB.set('state',S).catch(()=>{})}
+      r=await put();
+    }
+    if(!r.ok)throw new Error(r.status===401?'GitHub rejected the token (it may have expired).':r.status===403||r.status===404?'The token can’t save to that repository.':'GitHub said '+r.status);
+    SYNC.sha=(await r.json()).content.sha;SYNC.dirty=false;SYNC.last=Date.now();setSync('ok');
+  }catch(e){setSync('error',netMsg(e))}
+  finally{SYNC.busy=false;if(SYNC.again){SYNC.again=false;syncPush()}}
+}
+async function syncCheck(initial){ // load newer changes saved from another computer
+  if(!SYNC.cfg||SYNC.dirty||SYNC.busy)return;
+  try{
+    const rem=await syncPull();
+    if(!rem){SYNC.sha=null;return syncPush()}
+    SYNC.sha=rem.sha;
+    const ru=rem.data.updated||0,lu=S.updated||0;
+    if(ru>lu){applyRemote(rem.data);render();if(!initial)toast('Loaded your latest changes from GitHub')}
+    else if(ru<lu)return syncPush();
+    SYNC.last=Date.now();setSync('ok');
+  }catch(e){setSync('error',netMsg(e))}
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncCheck()});
+window.addEventListener('beforeunload',e=>{if(SYNC.cfg&&SYNC.dirty){e.preventDefault();e.returnValue=''}});
+async function syncConnect(){
+  const repo=($('#syRepo').value||'').trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/\/$/,'');
+  const token=($('#syToken').value||'').trim();
+  if(!/^[\w.-]+\/[\w.-]+$/.test(repo))return toast('Type the repository as yourname/repo-name');
+  if(!token)return toast('Paste your token first');
+  SYNC.cfg={repo,token,path:'test-maker-data.json'};
+  const btn=$('#syGo');if(btn){btn.disabled=true;btn.textContent='Connecting…'}
+  try{
+    const r=await gh('GET',`/repos/${repo}`);
+    if(!r.ok)throw new Error(r.status===401?'GitHub didn’t accept that token.':'Couldn’t open that repository. Check the name, and that the token was given access to it.');
+    const info=await r.json();
+    if(!info.private)throw new Error('That repository is public, so anyone could see your answer keys. Make it Private (Settings → General → Danger Zone) and try again.');
+    const rem=await syncPull();
+    if(rem){
+      const nb=(rem.data.banks||[]).length,nt=(rem.data.tests||[]).length;
+      const how=await choose('Found your data on GitHub',`GitHub already has ${nb} question bank${nb==1?'':'s'} and ${nt} saved test${nt==1?'':'s'}. What should this computer do?`,
+        [{label:'Cancel',value:null,cls:'ghost'},{label:'Combine with this computer’s',value:'merge'},{label:'Use GitHub’s data',value:'remote',cls:'dark'}]);
+      if(!how)throw new Error('');
+      SYNC.sha=rem.sha;
+      if(how==='remote'){applyRemote(rem.data);SYNC.last=Date.now()}else{mergeRemote(rem.data);S.updated=Date.now();SYNC.dirty=true}
+    }else{S.updated=Date.now();SYNC.dirty=true}
+    syncSaveCfg();setSync('ok');
+    if(SYNC.dirty)await syncPush();
+    if(DB.db)DB.set('state',S).catch(()=>{});
+    toast('Connected. Your work now saves to GitHub.');render();
+  }catch(e){SYNC.cfg=null;setSync('off');if(e.message)toast(netMsg(e));renderHelp()}
+}
+
 /* ================= actions ================= */
 function addToDraft(ids){let n=0;ids.forEach(id=>{if(!draftHas(id)&&QM[id]){S.draft.items.push({qid:id,size:QM[id].q.size});n++}});persist();return n}
 function importPayload(data){
@@ -801,7 +965,7 @@ const ACT={
   newBank:async()=>{const n=await ask('New question bank','Bank name','Unit 4 – ');if(!n)return;const b={id:uid(),name:n,color:BANK_COLORS[S.banks.length%6],questions:[]};S.banks.push(b);UI.bankId=b.id;UI.sel.clear();persist();render()},
   pickBank:a=>{UI.bankId=a.dataset.id;UI.sel.clear();UI.search='';UI.tag='';render()},
   renameBank:async()=>{const b=curBank();const n=await ask('Rename bank','Bank name',b.name);if(n){b.name=n;persist();render()}},
-  delBank:()=>{const b=curBank();if(!confirm(`Delete “${b.name}” and its ${b.questions.length} questions? This can’t be undone.`))return;const ids=new Set(b.questions.map(q=>q.id));S.banks=S.banks.filter(x=>x!==b);S.draft.items=S.draft.items.filter(i=>!ids.has(i.qid));UI.bankId=S.banks[0]&&S.banks[0].id;persist();render()},
+  delBank:async()=>{const b=curBank();if(!await confirmBox(`Delete “${esc(b.name)}” and its ${b.questions.length} questions? This can’t be undone.`,{ok:'Delete bank',danger:true}))return;const ids=new Set(b.questions.map(q=>q.id));S.banks=S.banks.filter(x=>x!==b);S.draft.items=S.draft.items.filter(i=>!ids.has(i.qid));UI.bankId=S.banks[0]&&S.banks[0].id;persist();render()},
   exportBank:()=>{const b=curBank();download(b.name.replace(/[^\w\- ]+/g,'').trim()+'.json',JSON.stringify({app:'miranda-test-maker',version:1,banks:[b]}))},
   importBank:async()=>{const [f]=await pickFile('.json,.csv');if(!f)return;
     if(/\.csv$/i.test(f.name)){const b={id:uid(),name:f.name.replace(/\.csv$/i,''),color:BANK_COLORS[S.banks.length%6],questions:[]};S.banks.push(b);UI.bankId=b.id;await csvInto(b,f);return}
@@ -809,7 +973,7 @@ const ACT={
   addQ:()=>editQuestion(newQ({}),UI.bankId),
   editQ:a=>editQuestion(QM[a.dataset.id].q,QM[a.dataset.id].b.id),
   dupQ:a=>{const e=QM[a.dataset.id];const c=Object.assign(clone(e.q),{id:uid()});e.b.questions.splice(e.b.questions.indexOf(e.q)+1,0,c);persist();render();toast('Duplicated')},
-  delQ:a=>{const id=a.dataset.id;const used=S.tests.filter(t=>t.items.some(i=>i.qid===id)).length;if(!confirm('Delete this question?'+(used?` It’s used in ${used} saved test(s) and will be removed from them.`:'')))return;const e=QM[id];e.b.questions=e.b.questions.filter(q=>q.id!==id);S.draft.items=S.draft.items.filter(i=>i.qid!==id);S.tests.forEach(t=>t.items=t.items.filter(i=>i.qid!==id));UI.sel.delete(id);persist();render()},
+  delQ:async a=>{const id=a.dataset.id;const used=S.tests.filter(t=>t.items.some(i=>i.qid===id)).length;if(!await confirmBox('Delete this question?'+(used?` It’s used in ${used} saved test(s) and will be removed from them.`:''),{ok:'Delete',danger:true}))return;const e=QM[id];e.b.questions=e.b.questions.filter(q=>q.id!==id);S.draft.items=S.draft.items.filter(i=>i.qid!==id);S.tests.forEach(t=>t.items=t.items.filter(i=>i.qid!==id));UI.sel.delete(id);persist();render()},
   sel:a=>{const id=a.dataset.id;UI.sel.has(id)?UI.sel.delete(id):UI.sel.add(id);renderBanks();math($('#view-banks'))},
   selAll:()=>{$$('#view-banks [data-act=sel]').forEach(c=>UI.sel.add(c.dataset.id));render()},
   selNone:()=>{UI.sel.clear();render()},
@@ -824,20 +988,23 @@ const ACT={
   rmQ:a=>{S.draft.items=S.draft.items.filter(i=>i.qid!==a.dataset.id);persist();renderBuild()},
   addQToTest:a=>{addToDraft([a.dataset.id]);renderBuild()},
   shuffle:()=>{const x=S.draft.items;for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}persist();renderBuild();toast('Shuffled — great for making a Version B')},
-  clearItems:()=>{if(confirm('Remove all questions from this '+S.draft.type.toLowerCase()+'?')){S.draft.items=[];persist();renderBuild()}},
+  clearItems:async()=>{if(await confirmBox('Remove all questions from this '+S.draft.type.toLowerCase()+'? (They stay in your question banks.)',{ok:'Clear',danger:true})){S.draft.items=[];persist();renderBuild()}},
   addAllShown:()=>{const ids=$$('#view-build [data-act=addQToTest]').map(b=>b.dataset.id);const n=addToDraft(ids);renderBuild();toast(`Added ${n}`)},
   addRandom:async()=>{const ids=$$('#view-build [data-act=addQToTest]').map(b=>b.dataset.id);if(!ids.length)return toast('Nothing left to add from this filter');const v=await ask('Add random questions',`How many? (${ids.length} available)`,String(Math.min(5,ids.length)));const n=Math.min(parseInt(v)||0,ids.length);if(!n)return;
     for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}addToDraft(ids.slice(0,n));renderBuild();toast(`Added ${n} random question${n==1?'':'s'}`)},
-  print:()=>{if(!S.draft.items.length&&!confirm('This has no questions yet. Print anyway?'))return;fitPreview();window.print()},
-  saveTest:()=>{const d=S.draft;if(!d.id)d.id=uid();d.updated=Date.now();const i=S.tests.findIndex(t=>t.id===d.id);const c=clone(d);if(i>=0)S.tests[i]=c;else S.tests.push(c);persist();renderBuild();toast(`Saved “${d.title}”`)},
-  saveAsNew:()=>{S.draft.id=null;S.draft.title+=' (copy)';ACT.saveTest()},
-  newTest:()=>{if(S.draft.items.length&&!S.draft.id&&!confirm('Start a new one? Unsaved questions on this page will be cleared.'))return;const t=S.draft.type;S.draft=newDraft();S.draft.type=t;S.draft.title='Unit '+t;persist();renderBuild()},
+  print:async()=>{if(!S.draft.items.length&&!await confirmBox('This has no questions yet. Print anyway?',{ok:'Print anyway'}))return;fitPreview();if(FRAMED)printFromFrame();else window.print()},
+  saveTest:()=>{const c=clone(S.draft);c.id=uid();c.updated=Date.now();S.tests.push(c);S.draft.id=c.id;persist();renderBuild();toast(`Saved a new copy of “${plain(c.title)}”`)},
+  updateTest:()=>{const d=S.draft,i=S.tests.findIndex(t=>t.id===d.id);if(i<0)return ACT.saveTest();d.updated=Date.now();S.tests[i]=clone(d);persist();renderBuild();toast(`Updated “${plain(d.title)}”`)},
+  newTest:async()=>{if(S.draft.items.length&&!S.draft.id&&!await confirmBox('Start a new one? The questions on this page haven’t been saved and will be cleared.',{ok:'Start new',danger:true}))return;const t=S.draft.type;S.draft=newDraft();S.draft.type=t;S.draft.title='Unit '+t;persist();renderBuild()},
   openTest:a=>{S.draft=clone(S.tests.find(t=>t.id===a.dataset.id));persist();UI.view='build';render();window.scrollTo(0,0)},
   dupTest:a=>{const t=clone(S.tests.find(x=>x.id===a.dataset.id));t.id=uid();t.title+=' (copy)';t.updated=Date.now();S.tests.push(t);persist();render()},
-  delTest:a=>{const t=S.tests.find(x=>x.id===a.dataset.id);if(!confirm(`Delete “${plain(t.title)}”? (Questions stay in your banks.)`))return;S.tests=S.tests.filter(x=>x!==t);if(S.draft.id===t.id)S.draft.id=null;persist();render()},
+  delTest:async a=>{const t=S.tests.find(x=>x.id===a.dataset.id);if(!await confirmBox(`Delete this saved copy of “${esc(plain(t.title))}”? (Questions stay in your banks.)`,{ok:'Delete',danger:true}))return;S.tests=S.tests.filter(x=>x!==t);if(S.draft.id===t.id)S.draft.id=null;persist();render()},
+  syncGo:()=>syncConnect(),
+  syncNow:async()=>{SYNC.dirty?await syncPush():await syncCheck();if(SYNC.state==='ok')toast('Synced with GitHub')},
+  syncOff:async()=>{if(!await confirmBox('Stop syncing this computer? Your work stays here and on GitHub. You can reconnect any time.',{ok:'Disconnect'}))return;SYNC.cfg=null;SYNC.sha=null;SYNC.dirty=false;syncSaveCfg();setSync('off');renderHelp()},
   backup:()=>{download(`test-maker-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'miranda-test-maker',version:1,banks:S.banks,tests:S.tests}));toast('Backup downloaded')},
-  restore:async()=>{const [f]=await pickFile('.json');if(!f)return;try{const data=JSON.parse(await readText(f));const replace=confirm('Replace everything here with this backup?\n\nOK = replace · Cancel = merge it in alongside what you have');
-    if(replace){S.banks=[];S.tests=[];reindex()}const r=importPayload(data);UI.bankId=S.banks[0]&&S.banks[0].id;toast(`Restored ${r.nb} banks, ${r.nq} questions, ${r.nt} saved`);render()}catch(e){toast('That file couldn’t be read as a backup')}},
+  restore:async()=>{const [f]=await pickFile('.json');if(!f)return;try{const data=JSON.parse(await readText(f));const how=await choose('Restore backup','Replace everything here with this backup, or combine it with what you already have?',[{label:'Cancel',value:null,cls:'ghost'},{label:'Combine',value:'merge'},{label:'Replace everything',value:'replace',cls:'danger'}]);if(!how)return;
+    if(how==='replace'){S.banks=[];S.tests=[];reindex()}const r=importPayload(data);UI.bankId=S.banks[0]&&S.banks[0].id;toast(`Restored ${r.nb} banks, ${r.nq} questions, ${r.nt} saved`);render()}catch(e){toast('That file couldn’t be read as a backup')}},
   csvTemplate:()=>download('question-bank-template.csv','question,answer,size,points,tags,choices,image\n"Solve for $x$: $2x + 3 = 11$",$x = 4$,half,2,solving,,\n"What is the slope of $y = 3x - 1$?",B,half,1,slope,$1$|$3$|$-1$|$0$,\n"Explain how you would solve $\\frac{x}{4} = 7$.",$x = 28$,full,3,solving; reasoning,,\n','text/csv'),
 };
 async function csvInto(b,f){
@@ -871,6 +1038,7 @@ document.addEventListener('change',e=>{const t=e.target;if(t.dataset.actChange==
   reindex();UI.bankId=UI.bankId||(S.banks[0]&&S.banks[0].id);
   const h=location.hash.slice(1);if(['banks','build','saved','help'].includes(h))UI.view=h;
   render();
+  if(SYNC.cfg){setSync('ok');syncCheck(true)}
   if(document.fonts)document.fonts.ready.then(()=>{if(UI.view==='build')fitPreview()});
 })();
 </script>
