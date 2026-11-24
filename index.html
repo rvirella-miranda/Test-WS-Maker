@@ -339,7 +339,15 @@ const DB={db:null,
 const BANK_COLORS=['#e4dcf1','#dbeadf','#f3dde5','#f5e9c6','#dce6f3','#f6e1d3'];
 const newDraft=()=>({id:null,title:'Unit Test',type:'Test',instructions:'',showDate:false,showPeriod:false,showPoints:false,density:'standard',font:'hand',autopack:true,printMode:'student',items:[]});
 let S={banks:[],tests:[],draft:newDraft()};
-let UI={view:'home',bankId:null,sel:new Set(),search:'',tag:'',pBank:'all',pSearch:'',pTag:''};
+let UI={view:'home',bankId:null,sel:new Set(),search:'',tag:'',pBank:'all',pSearch:'',pTag:'',bankSort:'az',testSort:'az',testType:''};
+try{const so=JSON.parse(localStorage.getItem('tmSort')||'{}');['bankSort','testSort','testType'].forEach(k=>{if(so[k]!=null)UI[k]=so[k]})}catch(e){}
+function saveSort(){try{localStorage.setItem('tmSort',JSON.stringify({bankSort:UI.bankSort,testSort:UI.testSort,testType:UI.testType}))}catch(e){}}
+// "Natural" title order, so "Unit 3" comes before "Unit 10"
+const byTitle=(a,b)=>plain(a).localeCompare(plain(b),undefined,{numeric:true,sensitivity:'base'});
+function sortedBanks(){const l=S.banks.slice();if(UI.bankSort==='az')l.sort((a,b)=>byTitle(a.name,b.name));else if(UI.bankSort==='za')l.sort((a,b)=>byTitle(b.name,a.name));else if(UI.bankSort==='newest')l.reverse();return l}
+function sortedTests(){let l=S.tests.slice();if(UI.testType)l=l.filter(t=>t.type===UI.testType);
+  const k={az:(a,b)=>byTitle(a.title,b.title),za:(a,b)=>byTitle(b.title,a.title),newest:(a,b)=>(b.updated||0)-(a.updated||0),oldest:(a,b)=>(a.updated||0)-(b.updated||0)}[UI.testSort]||((a,b)=>byTitle(a.title,b.title));
+  return l.sort((a,b)=>k(a,b)||(b.updated||0)-(a.updated||0))}
 let QM={};
 function reindex(){QM={};S.banks.forEach(b=>b.questions.forEach(q=>QM[q.id]={q,b}))}
 let saveT;
@@ -472,7 +480,8 @@ function renderBanks(){
   <div class="banks" style="margin-top:14px">
     <aside class="bank-list">
       <div class="row"><button class="btn dark" data-act="newBank">+ New bank</button><button class="btn" data-act="importBank">Import bank file</button></div>
-      ${S.banks.map(x=>`<div class="bank-item ${x.id===UI.bankId?'on':''}" style="--bc:${x.color}" data-act="pickBank" data-id="${x.id}"><b>${esc(x.name)}</b><small>${x.questions.length} question${x.questions.length==1?'':'s'}</small></div>`).join('')||'<p class="muted">No banks yet — make your first one!</p>'}
+      ${S.banks.length>1?`<label class="row" style="gap:8px;font-size:12px;font-weight:600;color:var(--muted)">SORT<select data-sort="bankSort" style="width:auto;flex:1"><option value="az" ${UI.bankSort==='az'?'selected':''}>Title A → Z</option><option value="za" ${UI.bankSort==='za'?'selected':''}>Title Z → A</option><option value="newest" ${UI.bankSort==='newest'?'selected':''}>Newest first</option><option value="oldest" ${UI.bankSort==='oldest'?'selected':''}>Oldest first</option></select></label>`:''}
+      ${sortedBanks().map(x=>`<div class="bank-item ${x.id===UI.bankId?'on':''}" style="--bc:${x.color}" data-act="pickBank" data-id="${x.id}"><b>${esc(x.name)}</b><small>${x.questions.length} question${x.questions.length==1?'':'s'}</small></div>`).join('')||'<p class="muted">No banks yet — make your first one!</p>'}
     </aside>
     <section>
     ${!b?`<div class="card empty-state"><div class="serif">Pick a bank on the left, or start a new one.</div></div>`:`
@@ -550,7 +559,7 @@ function renderBuild(){
       <div class="card tape" style="--tape:#86b0d8">
         <h3>Add from your banks</h3>
         <div class="row">
-          <select data-ui="pBank" class="grow" style="width:auto"><option value="all">All banks</option>${S.banks.map(b=>`<option value="${b.id}" ${UI.pBank===b.id?'selected':''}>${esc(b.name)}</option>`).join('')}</select>
+          <select data-ui="pBank" class="grow" style="width:auto"><option value="all">All banks</option>${sortedBanks().map(b=>`<option value="${b.id}" ${UI.pBank===b.id?'selected':''}>${esc(b.name)}</option>`).join('')}</select>
           <select data-ui="pTag" style="width:auto"><option value="">All topics</option>${allTags(pool).map(t=>`<option ${t===UI.pTag?'selected':''}>${esc(t)}</option>`).join('')}</select>
         </div>
         <div class="row" style="margin-top:8px"><input type="search" class="grow" style="width:auto" placeholder="Search…" data-ui="pSearch" value="${esc(UI.pSearch)}">
@@ -591,10 +600,16 @@ function wireDrag(){
 function renderSaved(){
   const col={Test:'pink',Quiz:'',Worksheet:'mint'};
   const tapes=['#e3c66b','#d98da2','#a596cf','#a7b98b','#86b0d8'];
-  const list=S.tests.slice().sort((a,b)=>(b.updated||0)-(a.updated||0));
+  const list=sortedTests();
   $('#view-saved').innerHTML=`
   <div class="eyebrow">Ready to reprint</div><h2 class="display">Saved Tests, Quizzes &amp; Worksheets</h2>
-  ${list.length?`<div class="saved-grid">${list.map((t,i)=>`
+  ${S.tests.length?`<div class="toolbar" style="margin-top:14px">
+    <span class="muted" style="font-size:12px;font-weight:600">SORT</span>
+    <select data-sort="testSort" style="width:auto"><option value="az" ${UI.testSort==='az'?'selected':''}>Title A → Z</option><option value="za" ${UI.testSort==='za'?'selected':''}>Title Z → A</option><option value="newest" ${UI.testSort==='newest'?'selected':''}>Newest saved first</option><option value="oldest" ${UI.testSort==='oldest'?'selected':''}>Oldest saved first</option></select>
+    <span class="muted" style="font-size:12px;font-weight:600;margin-left:8px">SHOW</span>
+    <select data-sort="testType" style="width:auto"><option value="">All types</option>${['Test','Quiz','Worksheet'].map(t=>`<option ${UI.testType===t?'selected':''}>${t}</option>`).join('')}</select>
+    <span class="grow"></span><span class="muted" style="font-size:12px">${list.length} of ${S.tests.length}</span></div>`:''}
+  ${!list.length&&S.tests.length?`<div class="card empty-state" style="margin-top:20px"><div class="serif">No saved ${esc(UI.testType.toLowerCase())}s yet.</div></div>`:list.length?`<div class="saved-grid">${list.map((t,i)=>`
     <div class="card saved-card tape" style="--tape:${tapes[i%5]};transform:rotate(${[-.8,.6,-.3,.9][i%4]}deg)">
       <span class="chip ${col[t.type]||''}">${esc(t.type)}</span>
       <h3>${fmt(t.title)}</h3>
@@ -719,7 +734,7 @@ function editQuestion(q,bankId){
     <h3>${ED.isNew?'New question':'Edit question'}</h3>
     <div class="qed">
       <div>
-        <label class="field"><span>Bank</span><select id="eBank">${S.banks.map(b=>`<option value="${b.id}" ${b.id===bankId?'selected':''}>${esc(b.name)}</option>`).join('')}</select></label>
+        <label class="field"><span>Bank</span><select id="eBank">${sortedBanks().map(b=>`<option value="${b.id}" ${b.id===bankId?'selected':''}>${esc(b.name)}</option>`).join('')}</select></label>
         <label class="field"><span>Question</span><textarea id="eText" rows="4" placeholder="Solve for $x$: $3x + 7 = 22$">${esc(ED.q.text)}</textarea><small>Math goes between $ signs, e.g. $\\frac{2}{3}x$</small></label>
         <div class="field"><span>Image (optional)</span>
           <div class="drop" id="eDrop">${ED.q.img?`<img src="${esc(ED.q.img)}" alt="">`:''}<div>Click to upload, drag an image here,<br>or <b>paste a screenshot</b> (Ctrl/Cmd+V)</div></div>
@@ -1028,7 +1043,7 @@ document.addEventListener('input',e=>{
   if(t.dataset.bind){S.draft[t.dataset.bind]=t.type==='checkbox'?t.checked:t.value;persist();renderPreview();if(t.dataset.bind==='font'||t.dataset.bind==='printMode'){} }
   else if(t.dataset.ui){UI[t.dataset.ui]=t.value;const pos=t.selectionStart;render();const n=$(`[data-ui="${t.dataset.ui}"]`);if(n&&t.type==='search'){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}}
 });
-document.addEventListener('change',e=>{const t=e.target;if(t.dataset.actChange==='itemSize'){S.draft.items[+t.dataset.i].size=t.value;persist();renderPreview()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.sort){UI[t.dataset.sort]=t.value;saveSort();render();return}if(t.dataset.actChange==='itemSize'){S.draft.items[+t.dataset.i].size=t.value;persist();renderPreview()}});
 
 /* ================= boot ================= */
 (async()=>{
