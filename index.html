@@ -6,7 +6,7 @@
 <title>Miranda's Test Maker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Lora:ital,wght@0,500;0,600;1,500&family=Patrick+Hand&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Lora:ital,wght@0,500;0,600;1,500&family=Patrick+Hand&family=Caveat:wght@500;600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" onload="window.__katexReady && window.__katexReady()"></script>
@@ -221,6 +221,55 @@ pre{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;
 .ans{color:#b22;font-family:"Patrick Hand",sans-serif;font-size:19px;margin-top:auto;border-top:1.5px dashed #e3a5a5;padding-top:4px}
 .key-tag{position:absolute;top:.15in;left:.42in;font:700 11px Poppins;letter-spacing:.2em;color:#b22}
 
+
+/* ---------- guided notes ---------- */
+.sec{border:1.5px solid #d6cddd;border-radius:12px;padding:10px 12px;margin-bottom:10px;background:#fff}
+.sec-h{display:flex;align-items:center;gap:4px;margin-bottom:8px;font-size:14px}
+.sec-h b{font-family:Lora,serif;font-size:15px}
+.subed{border-top:1px dashed #e0d8e6;padding-top:8px;margin-top:8px}
+.subed textarea{min-height:44px}
+.subed input{margin-top:4px}
+.addsec{display:flex;flex-wrap:wrap;gap:6px}
+#npreview{background:#e9e4ef;border:2px solid var(--plum);border-radius:14px;padding:14px;max-height:calc(100vh - 150px);overflow:auto}
+#npages .page{margin:0 auto 18px;box-shadow:0 3px 14px rgba(60,40,80,.18)}
+.nhdr{flex:none}
+.nbanner{position:relative;height:1.02in;margin:2px 0 4px}
+.nbanner svg.wave{position:absolute;inset:0;width:100%;height:100%}
+.nbanner-t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 .5in;line-height:1.05}
+.nbanner .nt{font-family:"Patrick Hand",sans-serif;font-size:30px;text-transform:uppercase;letter-spacing:.02em}
+.nbanner .ns{font-family:Caveat,cursive;font-size:24px;color:#333}
+.nkeytag{font-family:Poppins;font-size:11px;font-weight:700;letter-spacing:.15em;color:#1d4fa8;vertical-align:middle;margin-left:6px}
+.nb{flex:none;margin-top:11px}
+.nb.cont{margin-top:0}
+.nbox{border:2px solid #222}
+.nb.cont .nbox{border-top:0}
+.eqh{background:#ececec;text-align:center;padding:5px 12px 7px}
+.eqh h4{margin:0 0 2px;font-family:"Patrick Hand",sans-serif;font-size:21px;font-weight:400;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px}
+.crow{display:flex}
+.clabel{width:1.45in;flex:none;background:#d9d9d9;border-right:2px solid #222;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;font-family:"Patrick Hand",sans-serif;font-size:20px;line-height:1.15;text-transform:uppercase}
+.cbody{flex:1;min-width:0;padding:6px 12px 7px;line-height:1.75}
+.cbody ul,.ncell ul,.ndir ul{margin:0;padding-left:18px}
+.ndir{margin-bottom:-6px}
+.ngrid{display:flex}
+.ncell{flex:1 1 0;min-width:0;padding:6px 10px;overflow:hidden;display:flex;flex-direction:column;gap:2px}
+.ncell+.ncell{border-left:2px solid #222}
+.ncell.shade{background:#ececec}
+.nnum{display:flex;gap:6px;align-items:baseline}
+.nctr{text-align:center}
+.nimgw{flex:0 1 auto;min-height:0;display:flex;justify-content:center;overflow:hidden}
+.nimgw img{max-width:100%;max-height:100%;object-fit:contain;min-height:0}
+.pairrow{display:flex;gap:.22in}
+.pair{flex:1;display:flex;min-width:0}
+.nkey{font-family:Caveat,cursive;color:#1d4fa8;font-size:21px;line-height:1.2;margin-top:4px}
+.nkey .katex{font-size:.85em}
+.blank{display:inline-block;border-bottom:1.5px solid #333;text-align:center;line-height:1.15;margin:0 2px;text-indent:0}
+.blank .ba{visibility:hidden;font-family:Caveat,cursive;color:#1d4fa8;font-size:1.3em;font-weight:600}
+.nkey-on .blank .ba{visibility:visible}
+.nblank{position:relative}
+.nblank.lined{background:repeating-linear-gradient(to bottom,transparent 0,transparent .33in,#bbb .33in,#bbb calc(.33in + 1px));background-position:0 .3in}
+.nblabel{position:absolute;top:4px;left:10px;font-weight:600;background:#fff;padding:0 4px}
+.door:nth-child(5){background:var(--peach);transform:rotate(-1.2deg);box-shadow:6px 6px 0 #ecc7ad;--tape:#a7b98b}
+
 @media (max-width:1000px){
   .banks,.build{grid-template-columns:1fr}
   .preview-wrap{position:static}
@@ -240,13 +289,13 @@ pre{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;
   .topbar,.build-left,.preview-head,#modal,#toast,.no-print{display:none!important}
   main{padding:0;max-width:none}
   .view{display:none!important}
-  #view-build{display:block!important}
+  .view.on{display:block!important}
   .build{display:block}
   .preview-wrap{position:static}
-  #preview{border:0;padding:0;background:none;max-height:none;overflow:visible}
-  #pages{zoom:1!important}
-  #pages .page{margin:0;box-shadow:none;break-after:page;page-break-after:always;height:10.98in}
-  #pages .page:last-child{break-after:auto;page-break-after:auto}
+  #preview,#npreview{border:0;padding:0;background:none;max-height:none;overflow:visible}
+  #pages,#npages{zoom:1!important}
+  #pages .page,#npages .page{margin:0;box-shadow:none;break-after:page;page-break-after:always;height:10.98in}
+  #pages .page:last-child,#npages .page:last-child{break-after:auto;page-break-after:auto}
 }
 </style>
 </head>
@@ -262,6 +311,7 @@ pre{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;
       <button data-act="go" data-v="home">Home</button>
       <button data-act="go" data-v="banks">Question Banks</button>
       <button data-act="go" data-v="build">Build &amp; Print</button>
+      <button data-act="go" data-v="notes">Guided Notes</button>
       <button data-act="go" data-v="saved">Saved</button>
       <button data-act="go" data-v="help">Backup &amp; Help</button>
     </nav>
@@ -273,6 +323,7 @@ pre{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;
   <section class="view" id="view-home"></section>
   <section class="view" id="view-banks"></section>
   <section class="view" id="view-build"></section>
+  <section class="view" id="view-notes"></section>
   <section class="view" id="view-saved"></section>
   <section class="view" id="view-help"></section>
 </main>
@@ -298,7 +349,7 @@ function math(el){
   if(!el||!window.renderMathInElement) return;
   try{renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],throwOnError:false,ignoredClasses:['dl']})}catch(e){}
 }
-window.__katexReady=()=>{math(document.querySelector('.view.on'));math($('#modal'))};
+window.__katexReady=()=>{if(UI.view==='notes')renderNotes();else math(document.querySelector('.view.on'));math($('#modal'))};
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2400)}
 function download(name,text,type='application/json'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 function pickFile(accept,multiple){return new Promise(res=>{const f=$('#filePick');f.value='';f.accept=accept;f.multiple=!!multiple;f.onchange=()=>res([...f.files]);f.click()})}
@@ -338,14 +389,15 @@ const DB={db:null,
 /* ================= state ================= */
 const BANK_COLORS=['#e4dcf1','#dbeadf','#f3dde5','#f5e9c6','#dce6f3','#f6e1d3'];
 const newDraft=()=>({id:null,title:'Unit Test',type:'Test',instructions:'',showDate:false,showPeriod:false,showPoints:false,density:'standard',font:'hand',autopack:true,printMode:'student',items:[]});
-let S={banks:[],tests:[],draft:newDraft()};
+let S={banks:[],tests:[],draft:newDraft(),notes:[],noteDraft:null};
 let UI={view:'home',bankId:null,sel:new Set(),search:'',tag:'',pBank:'all',pSearch:'',pTag:'',bankSort:'az',testSort:'az',testType:''};
 try{const so=JSON.parse(localStorage.getItem('tmSort')||'{}');['bankSort','testSort','testType'].forEach(k=>{if(so[k]!=null)UI[k]=so[k]})}catch(e){}
 function saveSort(){try{localStorage.setItem('tmSort',JSON.stringify({bankSort:UI.bankSort,testSort:UI.testSort,testType:UI.testType}))}catch(e){}}
 // "Natural" title order, so "Unit 3" comes before "Unit 10"
 const byTitle=(a,b)=>plain(a).localeCompare(plain(b),undefined,{numeric:true,sensitivity:'base'});
 function sortedBanks(){const l=S.banks.slice();if(UI.bankSort==='az')l.sort((a,b)=>byTitle(a.name,b.name));else if(UI.bankSort==='za')l.sort((a,b)=>byTitle(b.name,a.name));else if(UI.bankSort==='newest')l.reverse();return l}
-function sortedTests(){let l=S.tests.slice();if(UI.testType)l=l.filter(t=>t.type===UI.testType);
+function allSaved(){return S.tests.concat((S.notes||[]).map(n=>Object.assign({},n,{type:'Guided Notes',_note:true})))}
+function sortedTests(){let l=allSaved();if(UI.testType)l=l.filter(t=>t.type===UI.testType);
   const k={az:(a,b)=>byTitle(a.title,b.title),za:(a,b)=>byTitle(b.title,a.title),newest:(a,b)=>(b.updated||0)-(a.updated||0),oldest:(a,b)=>(a.updated||0)-(b.updated||0)}[UI.testSort]||((a,b)=>byTitle(a.title,b.title));
   return l.sort((a,b)=>k(a,b)||(b.updated||0)-(a.updated||0))}
 let QM={};
@@ -462,6 +514,7 @@ function renderHome(){
   <div class="doors">
     <div class="door tape" data-act="go" data-v="banks">${ICON.bank}<h3>Question Banks</h3><p>Add, upload &amp; organize problems</p><span class="open">OPEN →</span></div>
     <div class="door tape" data-act="go" data-v="build">${ICON.build}<h3>Build &amp; Print</h3><p>Tests, quizzes &amp; worksheets</p><span class="open">OPEN →</span></div>
+    <div class="door tape" data-act="go" data-v="notes"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><h3>Guided Notes</h3><p>Boxed note sheets with fill-in blanks</p><span class="open">OPEN →</span></div>
     <div class="door tape" data-act="go" data-v="saved">${ICON.saved}<h3>Saved</h3><p>Reprint anything you’ve made</p><span class="open">OPEN →</span></div>
     <div class="door tape" data-act="go" data-v="help">${ICON.help}<h3>Backup &amp; Help</h3><p>Save a copy · hosting tips</p><span class="open">OPEN →</span></div>
   </div>
@@ -598,24 +651,24 @@ function wireDrag(){
 }
 
 function renderSaved(){
-  const col={Test:'pink',Quiz:'',Worksheet:'mint'};
+  const col={Test:'pink',Quiz:'',Worksheet:'mint','Guided Notes':'butter'};const total=allSaved().length;
   const tapes=['#e3c66b','#d98da2','#a596cf','#a7b98b','#86b0d8'];
   const list=sortedTests();
   $('#view-saved').innerHTML=`
   <div class="eyebrow">Ready to reprint</div><h2 class="display">Saved Tests, Quizzes &amp; Worksheets</h2>
-  ${S.tests.length?`<div class="toolbar" style="margin-top:14px">
+  ${total?`<div class="toolbar" style="margin-top:14px">
     <span class="muted" style="font-size:12px;font-weight:600">SORT</span>
     <select data-sort="testSort" style="width:auto"><option value="az" ${UI.testSort==='az'?'selected':''}>Title A → Z</option><option value="za" ${UI.testSort==='za'?'selected':''}>Title Z → A</option><option value="newest" ${UI.testSort==='newest'?'selected':''}>Newest saved first</option><option value="oldest" ${UI.testSort==='oldest'?'selected':''}>Oldest saved first</option></select>
     <span class="muted" style="font-size:12px;font-weight:600;margin-left:8px">SHOW</span>
-    <select data-sort="testType" style="width:auto"><option value="">All types</option>${['Test','Quiz','Worksheet'].map(t=>`<option ${UI.testType===t?'selected':''}>${t}</option>`).join('')}</select>
-    <span class="grow"></span><span class="muted" style="font-size:12px">${list.length} of ${S.tests.length}</span></div>`:''}
-  ${!list.length&&S.tests.length?`<div class="card empty-state" style="margin-top:20px"><div class="serif">No saved ${esc(UI.testType.toLowerCase())}s yet.</div></div>`:list.length?`<div class="saved-grid">${list.map((t,i)=>`
+    <select data-sort="testType" style="width:auto"><option value="">All types</option>${['Test','Quiz','Worksheet','Guided Notes'].map(t=>`<option ${UI.testType===t?'selected':''}>${t}</option>`).join('')}</select>
+    <span class="grow"></span><span class="muted" style="font-size:12px">${list.length} of ${total}</span></div>`:''}
+  ${!list.length&&total?`<div class="card empty-state" style="margin-top:20px"><div class="serif">No saved ${esc(UI.testType.toLowerCase())}${UI.testType.endsWith('s')?'':'s'} yet.</div></div>`:list.length?`<div class="saved-grid">${list.map((t,i)=>`
     <div class="card saved-card tape" style="--tape:${tapes[i%5]};transform:rotate(${[-.8,.6,-.3,.9][i%4]}deg)">
       <span class="chip ${col[t.type]||''}">${esc(t.type)}</span>
       <h3>${fmt(t.title)}</h3>
-      <div class="muted" style="font-size:12px">${t.items.length} questions · saved ${new Date(t.updated||Date.now()).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}</div>
-      <div class="acts"><button class="btn sm dark" data-act="openTest" data-id="${t.id}">Open</button><button class="btn sm" data-act="dupTest" data-id="${t.id}">Duplicate</button><button class="btn sm ghost danger" data-act="delTest" data-id="${t.id}">Delete</button></div>
-    </div>`).join('')}</div>`:`<div class="card empty-state" style="margin-top:20px"><div class="serif">Nothing saved yet.</div><p>Build something on the Build &amp; Print page and click <b>Save</b>.</p></div>`}`;
+      <div class="muted" style="font-size:12px">${t._note?`${t.sections.length} section${t.sections.length==1?'':'s'}`:`${t.items.length} questions`} · saved ${new Date(t.updated||Date.now()).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}</div>
+      <div class="acts"><button class="btn sm dark" data-act="${t._note?'openNote':'openTest'}" data-id="${t.id}">Open</button><button class="btn sm" data-act="${t._note?'dupNote':'dupTest'}" data-id="${t.id}">Duplicate</button><button class="btn sm ghost danger" data-act="${t._note?'delNote':'delTest'}" data-id="${t.id}">Delete</button></div>
+    </div>`).join('')}</div>`:`<div class="card empty-state" style="margin-top:20px"><div class="serif">Nothing saved yet.</div><p>Build something on the Build &amp; Print or Guided Notes page and click <b>Save new copy</b>.</p></div>`}`;
 }
 
 function renderHelp(){
@@ -693,9 +746,254 @@ function renderHelp(){
 function render(){
   $$('.view').forEach(v=>v.classList.toggle('on',v.id==='view-'+UI.view));
   $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===UI.view));
-  ({home:renderHome,banks:renderBanks,build:renderBuild,saved:renderSaved,help:renderHelp})[UI.view]();
-  if(UI.view!=='build')math($('#view-'+UI.view));
+  ({home:renderHome,banks:renderBanks,build:renderBuild,notes:renderNotes,saved:renderSaved,help:renderHelp})[UI.view]();
+  if(UI.view!=='build'&&UI.view!=='notes')math($('#view-'+UI.view));
 }
+
+/* ================= guided notes ================= */
+const NH={s:1.2,m:1.6,l:2.2,xl:3}; // box heights in inches
+const SEC_LABEL={eq:'Essential question',concept:'Key idea box',text:'Directions',grid:'Problem boxes',pairs:'Side-by-side pairs',box:'Blank notes box',brk:'Page break'};
+const blankCell=()=>({text:'',answer:'',img:''});
+function newSection(t){
+  const s={id:uid(),type:t};
+  if(t==='eq')Object.assign(s,{heading:'Essential Question',text:'Type your essential question here.'});
+  if(t==='concept')Object.assign(s,{rows:[{label:'Key Idea',text:'- Type your notes here. Put [[answers]] in double brackets to make fill-in blanks.'}]});
+  if(t==='text')Object.assign(s,{text:'Directions go here.'});
+  if(t==='grid')Object.assign(s,{cols:3,height:'m',numbered:true,restart:false,shade:false,cells:[blankCell(),blankCell(),blankCell()]});
+  if(t==='pairs')Object.assign(s,{height:'m',pairs:[{left:'',right:'',leftAns:'',rightAns:''},{left:'',right:'',leftAns:'',rightAns:''}]});
+  if(t==='box')Object.assign(s,{label:'Notes',height:'m',lined:true});
+  return s;
+}
+const newNote=()=>({id:null,title:'Notes Title',subtitle:'Guided Notes',nameLine:false,dateLine:false,font:'clean',printMode:'student',fill:true,sections:[newSection('eq'),newSection('concept')]});
+function sampleNote(){
+  const c=(text,answer)=>({text,answer,img:''});
+  return Object.assign(newNote(),{title:'Literal Equations Intro',sections:[
+    {id:uid(),type:'eq',heading:'Essential Question',text:'What are literal equations? How do I solve for a specific variable?'},
+    {id:uid(),type:'concept',rows:[{label:'Literal Equations',text:'- Literal equations are equations with [[multiple]] [[variables]], such as formulas like **$y = mx + b$** or **$a^2 + b^2 = c^2$**.\n- To solve literal equations, circle the [[variable]] that you are solving for, and use [[inverse]] [[operations]] to isolate the variables, like you would with a normal equation.\n- Literal equations do [[not]] simplify nicely, due to the multiple variables.'}]},
+    {id:uid(),type:'text',text:'Solve the equation on the left. Then use a similar process to solve the literal equation on the right.'},
+    {id:uid(),type:'pairs',height:'s',pairs:[
+      {left:'$x + 2 = 10$',leftAns:'$x = 8$',right:'$m + n = p$, for $m$',rightAns:'$m = p - n$'},
+      {left:'$21 = 7x$',leftAns:'$3 = x$',right:'$F = ma$, for $a$',rightAns:'$\\frac{F}{m} = a$'},
+      {left:'$4 - 6y = 16$',leftAns:'$y = -2$',right:'$3x + 2y = 10$, for $y$',rightAns:'$y = -\\frac{3}{2}x + 5$'},
+      {left:'$11 = 2x + 3$',leftAns:'$4 = x$',right:'$y = mx + b$, for $x$',rightAns:'$\\frac{y - b}{m} = x$'}]},
+    {id:uid(),type:'text',text:'Solve the literal equations for the specified variables.'},
+    {id:uid(),type:'grid',cols:3,height:'s',numbered:true,restart:true,shade:false,cells:[
+      c('Solve for $h$.\n$j + h = k$','$h = k - j$'),c('Solve for $d$.\n$s = \\dfrac{d}{t}$','$st = d$'),c('Solve for $t$.\n$I = prt$','$\\frac{I}{pr} = t$'),
+      c('Solve for $a$.\n$w = 7a + 4b$','$\\frac{w - 4b}{7} = a$'),c('Solve for $d$.\n$a = bc + 3d$','$\\frac{a - bc}{3} = d$'),c('Solve for $h$.\n$V = \\pi r^2 h$','$\\frac{V}{\\pi r^2} = h$')]}
+  ]});
+}
+
+// Text formatting for notes: **bold**, $math$, [[blank]], "- " bullets, math-only lines centered
+function fmtN(t,key,center){
+  const blanks=[];
+  let src=String(t||'').replace(/\[\[(.+?)\]\]/g,(_,a)=>{blanks.push(a);return '\u0000'+(blanks.length-1)+'\u0000'});
+  const lines=src.split('\n');let out='',inList=false;
+  const line=l=>{let h=fmt(l);return h.replace(/\u0000(\d+)\u0000/g,(_,i)=>{const a=blanks[+i];const w=Math.max(4,plain(a).length*.62+1.6);return `<span class="blank" style="min-width:${w}em"><span class="ba">${fmt(a)}</span></span>`})};
+  lines.forEach(l=>{
+    const b=l.match(/^\s*[-•]\s+(.*)$/);
+    if(b){if(!inList){out+='<ul>';inList=true}out+=`<li>${line(b[1])}</li>`;return}
+    if(inList){out+='</ul>';inList=false}
+    if(!l.trim()){out+='<div style="height:.5em"></div>';return}
+    const c=center||/^\s*\$[^$]+\$\s*$/.test(l)||/^\s*\$\$.+\$\$\s*$/.test(l);
+    out+=`<div${c?' class="nctr"':''}>${line(l)}</div>`;
+  });
+  if(inList)out+='</ul>';
+  return out;
+}
+function nCell(cell,key,num,extra=''){
+  let h=`<div class="ncell ${extra}">`;
+  const txt=fmtN(cell.text,key,extra.includes('ctr'));
+  h+=num!=null?`<div class="nnum"><span class="qnum">${num}.</span><div style="flex:1;min-width:0">${txt}</div></div>`:txt;
+  if(cell.img)h+=`<div class="nimgw"><img src="${esc(cell.img)}" alt=""></div>`;
+  if(key&&cell.answer)h+=`<div class="nkey">${fmtN(cell.answer,key,true)}</div>`;
+  return h+'</div>';
+}
+// Each section becomes blocks so long sections can continue onto the next page
+function noteBlocks(n,key){
+  const B=[];let num=0,prev=null;
+  n.sections.forEach(s=>{
+    const joinPrev=s.type==='concept'&&(prev==='eq'||prev==='concept');
+    if(s.type==='eq')B.push({html:`<div class="nbox"><div class="eqh"><h4>${fmt(s.heading||'')}</h4><div>${fmtN(s.text,key,true)}</div></div></div>`});
+    if(s.type==='concept')(s.rows||[]).forEach((r,i)=>B.push({cont:joinPrev||i>0,html:`<div class="nbox crow"><div class="clabel">${fmt(r.label||'')}</div><div class="cbody">${fmtN(r.text,key)}</div></div>`}));
+    if(s.type==='text')B.push({keep:true,html:`<div class="ndir">${fmtN(s.text,key)}</div>`});
+    if(s.type==='grid'){
+      if(s.restart)num=0;
+      const cols=Math.max(1,Math.min(4,+s.cols||3)),h=NH[s.height]||NH.m;
+      for(let i=0;i<s.cells.length;i+=cols){
+        const row=s.cells.slice(i,i+cols);
+        let html=`<div class="nbox ngrid" style="height:__H__">`;
+        row.forEach((c,j)=>{html+=nCell(c,key,s.numbered?++num:null,s.shade&&j===0?'shade':'')});
+        for(let k=row.length;k<cols;k++)html+='<div class="ncell"></div>';
+        B.push({cont:i>0,grow:h,html:html+'</div>'});
+      }
+    }
+    if(s.type==='pairs'){
+      const h=NH[s.height]||NH.m;
+      for(let i=0;i<s.pairs.length;i+=2){
+        let html=`<div class="pairrow" style="height:__H__">`;
+        s.pairs.slice(i,i+2).forEach(p=>{html+=`<div class="nbox pair">${nCell({text:p.left,answer:p.leftAns},key,null,'shade ctr')}${nCell({text:p.right,answer:p.rightAns},key,null,'ctr')}</div>`});
+        if(i+1>=s.pairs.length)html+='<div class="pair" style="visibility:hidden"></div>';
+        B.push({grow:h,html:html+'</div>'});
+      }
+    }
+    if(s.type==='box')B.push({grow:NH[s.height]||NH.m,html:`<div class="nbox nblank ${s.lined?'lined':''}" style="height:__H__">${s.label?`<div class="nblabel">${fmt(s.label)}</div>`:''}</div>`});
+    if(s.type==='brk')B.push({brk:true,html:''});
+    prev=s.type;
+  });
+  return B;
+}
+const NWAVE=`<svg class="wave" viewBox="0 0 1000 120" preserveAspectRatio="none"><path d="M14 14 C 260 26 620 2 984 12 C 994 44 996 82 986 108 C 720 96 330 116 18 108 C 8 80 6 44 14 14 Z" fill="#fff" stroke="#1d1d1d" stroke-width="3" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+function noteHeader(n,key){
+  const lines=(n.nameLine||n.dateLine)?`<div class="ph-top"><div class="lines">${n.dateLine?'<span class="ph-line">Date:<i style="width:1.3in"></i></span>':''}</div>${n.nameLine?'<div class="ph-line">Name:<i style="width:2.6in"></i></div>':''}</div>`:'';
+  return `${lines}<div class="nbanner">${NWAVE}<div class="nbanner-t"><div class="nt">${fmt(n.title)}</div><div class="ns">${fmt(n.subtitle||'')}${key?' <span class="nkeytag">Answer Key</span>':''}</div></div></div>`;
+}
+function notePagesHTML(n){
+  const modes=n.printMode==='both'?[false,true]:[n.printMode==='key'];
+  const PAGE_H=972-6; // usable height inside a letter page, in px
+  let out='',count=0;
+  let meas=$('#nmeasure');if(!meas){meas=document.createElement('div');meas.id='nmeasure';document.body.appendChild(meas)}
+  for(const key of modes){
+    const blocks=noteBlocks(n,key);
+    meas.className=`page f-${n.font} ${key?'nkey-on':''}`;
+    meas.style.cssText='position:absolute;left:-10000px;top:0;height:auto;visibility:hidden';
+    meas.innerHTML=`<div class="nhdr">${noteHeader(n,key)}</div>`+blocks.map(b=>`<div class="nb">${b.html.replace('__H__',(b.grow||0)+'in')}</div>`).join('');
+    math(meas);
+    const kids=[...meas.children];
+    const hdrH=kids[0].offsetHeight;
+    const H=blocks.map((b,i)=>b.brk?0:kids[i+1].offsetHeight+11);
+    const pages=[];let cur=[],used=hdrH;
+    blocks.forEach((b,i)=>{
+      if(b.brk){if(cur.length){pages.push(cur);cur=[];used=0}return}
+      let need=H[i];if(b.keep&&blocks[i+1]&&!blocks[i+1].brk)need+=H[i+1];
+      if(used+need>PAGE_H&&cur.length){pages.push({bl:cur,used});cur=[];used=0}
+      cur.push(b);used+=H[i];
+    });
+    pages.push({bl:cur,used});
+    pages.forEach(({bl:pg,used},pi)=>{
+      const g=pg.filter(b=>b.grow).length;const extra=n.fill&&g?Math.min(2.4,Math.max(0,(PAGE_H-used-4)/96/g)):0;
+      out+=`<div class="page f-${n.font} ${key?'nkey-on':''}">`;
+      if(key&&pi>0)out+='<div class="key-tag">ANSWER KEY</div>';
+      if(pi===0)out+=`<div class="nhdr">${noteHeader(n,key)}</div>`;
+      pg.forEach((b,bi)=>{out+=`<div class="nb ${b.cont&&bi>0?'cont':''}">${b.html.replace('__H__',((b.grow||0)+extra).toFixed(3)+'in')}</div>`});
+      out+='</div>';count++;
+    });
+  }
+  meas.innerHTML='';
+  return {html:out,count};
+}
+let nT;
+function schedNP(){clearTimeout(nT);nT=setTimeout(renderNotePreview,180)}
+function renderNotePreview(){
+  const p=$('#npages');if(!p)return;
+  const r=notePagesHTML(S.noteDraft);
+  p.innerHTML=r.html;math(p);fitN();
+  const c=$('#npCount');if(c)c.textContent=`${r.count} page${r.count==1?'':'s'}`;
+}
+function fitN(){const pv=$('#npreview'),p=$('#npages');if(!pv||!p||!pv.clientWidth)return;p.style.zoom=Math.min(1,(pv.clientWidth-32)/816)}
+window.addEventListener('resize',fitN);
+
+const HOPT=(v)=>[['s','Short'],['m','Medium'],['l','Tall'],['xl','Extra tall']].map(([k,l])=>`<option value="${k}" ${v===k?'selected':''}>${l}</option>`).join('');
+function secEditor(s,si,total){
+  const P=f=>`${si}.${f}`;
+  const ta=(path,val,rows=2,ph='')=>`<textarea data-np="${path}" rows="${rows}" placeholder="${esc(ph)}">${esc(val||'')}</textarea>`;
+  const inp=(path,val,ph='')=>`<input type="text" data-np="${path}" value="${esc(val||'')}" placeholder="${esc(ph)}">`;
+  let body='';
+  if(s.type==='eq')body=`<label class="field"><span>Heading</span>${inp(P('heading'),s.heading)}</label><label class="field"><span>Question</span>${ta(P('text'),s.text,2)}</label>`;
+  if(s.type==='text')body=`<label class="field"><span>Text</span>${ta(P('text'),s.text,2)}</label>`;
+  if(s.type==='concept')body=s.rows.map((r,ri)=>`<div class="subed"><div class="row"><span class="muted" style="font-size:12px;font-weight:600">ROW ${ri+1}</span><span class="grow"></span>${s.rows.length>1?`<button class="x" data-act="nDelRow" data-si="${si}" data-i="${ri}" title="Remove row">×</button>`:''}</div>
+      <label class="field"><span>Gray label</span>${inp(`${si}.rows.${ri}.label`,r.label)}</label>
+      <label class="field"><span>Notes (start a line with “- ” for a bullet)</span>${ta(`${si}.rows.${ri}.text`,r.text,4)}</label></div>`).join('')+`<button class="btn sm" data-act="nAddRow" data-si="${si}">+ Add row</button>`;
+  if(s.type==='grid')body=`<div class="row" style="gap:12px;margin-bottom:8px">
+      <label class="field" style="margin:0"><span>Boxes per row</span><select data-np="${P('cols')}" data-num="1" data-re="1" style="width:auto">${[1,2,3,4].map(k=>`<option ${+s.cols===k?'selected':''}>${k}</option>`).join('')}</select></label>
+      <label class="field" style="margin:0"><span>Box height</span><select data-np="${P('height')}" style="width:auto">${HOPT(s.height)}</select></label></div>
+      <div class="row" style="gap:14px"><label class="toggle"><input type="checkbox" data-np="${P('numbered')}" ${s.numbered?'checked':''}>Number the boxes</label>
+      <label class="toggle"><input type="checkbox" data-np="${P('restart')}" ${s.restart?'checked':''}>Start numbering at 1</label>
+      <label class="toggle"><input type="checkbox" data-np="${P('shade')}" ${s.shade?'checked':''}>Shade first box in each row</label></div>`+
+      s.cells.map((c,ci)=>`<div class="subed"><div class="row"><span class="muted" style="font-size:12px;font-weight:600">BOX ${ci+1}</span><span class="grow"></span>
+        <button class="btn sm ghost" data-act="nCellImg" data-si="${si}" data-i="${ci}">${c.img?'Replace image':'+ Image'}</button>${c.img?`<button class="btn sm ghost danger" data-act="nCellImgRm" data-si="${si}" data-i="${ci}">Remove image</button>`:''}
+        <button class="x" data-act="nDelCell" data-si="${si}" data-i="${ci}" title="Remove box">×</button></div>
+        ${ta(`${si}.cells.${ci}.text`,c.text,2,'e.g. Solve for $h$.\n$j + h = k$')}
+        ${c.img?`<img class="qthumb" src="${esc(c.img)}" alt="">`:''}
+        <div class="row" style="margin-top:4px"><span class="muted" style="font-size:12px">Key:</span><div class="grow">${inp(`${si}.cells.${ci}.answer`,c.answer,'Answer shown on the answer key')}</div></div></div>`).join('')+
+      `<div class="row"><button class="btn sm" data-act="nAddCell" data-si="${si}">+ Add box</button><button class="btn sm ghost" data-act="nAddCell" data-si="${si}" data-n="${s.cols}">+ Add a full row</button></div>`;
+  if(s.type==='pairs')body=`<label class="field"><span>Box height</span><select data-np="${P('height')}" style="width:auto">${HOPT(s.height)}</select></label>`+
+      s.pairs.map((p,pi)=>`<div class="subed"><div class="row"><span class="muted" style="font-size:12px;font-weight:600">PAIR ${pi+1}</span><span class="grow"></span><button class="x" data-act="nDelPair" data-si="${si}" data-i="${pi}" title="Remove pair">×</button></div>
+        <div class="row" style="align-items:flex-start"><div class="grow"><small class="muted">Left (shaded)</small>${ta(`${si}.pairs.${pi}.left`,p.left,1)}${inp(`${si}.pairs.${pi}.leftAns`,p.leftAns,'Key answer')}</div>
+        <div class="grow"><small class="muted">Right</small>${ta(`${si}.pairs.${pi}.right`,p.right,1)}${inp(`${si}.pairs.${pi}.rightAns`,p.rightAns,'Key answer')}</div></div></div>`).join('')+
+      `<button class="btn sm" data-act="nAddPair" data-si="${si}">+ Add pair</button>`;
+  if(s.type==='box')body=`<div class="row" style="gap:12px"><label class="field grow" style="margin:0"><span>Label (optional)</span>${inp(P('label'),s.label)}</label>
+      <label class="field" style="margin:0"><span>Height</span><select data-np="${P('height')}" style="width:auto">${HOPT(s.height)}</select></label></div>
+      <label class="toggle" style="margin-top:8px"><input type="checkbox" data-np="${P('lined')}" ${s.lined?'checked':''}>Lined paper</label>`;
+  if(s.type==='brk')body='<p class="muted" style="margin:0;font-size:13px">Everything after this starts on a new page.</p>';
+  return `<div class="sec" id="sec-${s.id}"><div class="sec-h"><b>${SEC_LABEL[s.type]}</b><span class="grow"></span>
+    <button class="btn sm ghost" data-act="nMove" data-si="${si}" data-d="-1" ${si===0?'disabled':''} title="Move up">↑</button>
+    <button class="btn sm ghost" data-act="nMove" data-si="${si}" data-d="1" ${si===total-1?'disabled':''} title="Move down">↓</button>
+    <button class="btn sm ghost" data-act="nDup" data-si="${si}" title="Duplicate">Copy</button>
+    <button class="btn sm ghost danger" data-act="nDel" data-si="${si}" title="Delete section">Delete</button></div>${body}</div>`;
+}
+function renderNotes(){
+  const n=S.noteDraft;
+  const saved=n.id&&S.notes.some(x=>x.id===n.id);
+  $('#view-notes').innerHTML=`
+  <div class="build">
+    <div class="build-left">
+      <div class="actionbar">
+        <button class="btn dark" data-act="nPrint">🖨 Print / Save PDF</button>
+        <button class="btn sage" data-act="nSave" title="Saves a separate copy you can reopen from the Saved page">Save new copy</button>
+        ${saved?'<button class="btn" data-act="nUpdate">Update saved copy</button>':''}
+        <button class="btn ghost" data-act="nNew">New</button>
+      </div>
+      <div class="card tape" style="--tape:#d98da2">
+        <h3>Title &amp; printing</h3>
+        <label class="field"><span>Title</span><input type="text" data-nb="title" value="${esc(n.title)}"></label>
+        <label class="field"><span>Subtitle</span><input type="text" data-nb="subtitle" value="${esc(n.subtitle)}"></label>
+        <div class="row" style="align-items:flex-start;gap:14px">
+          <label class="field grow"><span>Font</span><select data-nb="font"><option value="clean" ${n.font==='clean'?'selected':''}>Clean (Poppins)</option><option value="hand" ${n.font==='hand'?'selected':''}>Classroom (handwritten)</option><option value="classic" ${n.font==='classic'?'selected':''}>Classic (serif)</option></select></label>
+          <label class="field grow"><span>Print</span><select data-nb="printMode"><option value="student" ${n.printMode==='student'?'selected':''}>Student copy</option><option value="key" ${n.printMode==='key'?'selected':''}>Answer key only</option><option value="both" ${n.printMode==='both'?'selected':''}>Student copy + key</option></select></label>
+        </div>
+        <label class="toggle"><input type="checkbox" data-nb="fill" ${n.fill?'checked':''}>Stretch boxes to fill each page (box heights become minimums)</label>
+        <div class="row" style="gap:18px"><label class="toggle"><input type="checkbox" data-nb="nameLine" ${n.nameLine?'checked':''}>Name line</label><label class="toggle"><input type="checkbox" data-nb="dateLine" ${n.dateLine?'checked':''}>Date line</label></div>
+      </div>
+      <div class="card tape" style="--tape:#a596cf">
+        <h3>Sections <span class="chip">${n.sections.length}</span></h3>
+        <p class="muted" style="font-size:12px;margin:-6px 0 10px">Type <code>[[answer]]</code> to make a fill-in blank. Students see a line, and the answer key shows the word. Math goes between $ signs.</p>
+        <div class="secs">${n.sections.map((s,i)=>secEditor(s,i,n.sections.length)).join('')||'<p class="muted">No sections yet. Add one below.</p>'}</div>
+      </div>
+      <div class="card tape" style="--tape:#e3c66b">
+        <h3>Add a section</h3>
+        <div class="addsec">${Object.keys(SEC_LABEL).map(t=>`<button class="btn sm" data-act="nAdd" data-t="${t}">+ ${SEC_LABEL[t]}</button>`).join('')}</div>
+      </div>
+    </div>
+    <div class="preview-wrap">
+      <div class="preview-head"><div class="eyebrow">Print preview</div><span class="chip" id="npCount"></span><span class="grow"></span><span class="muted" style="font-size:12px">Letter size · choose “Save as PDF” in the print window to keep a copy</span></div>
+      <div id="npreview"><div id="npages"></div></div>
+    </div>
+  </div>`;
+  math($('.build-left',$('#view-notes')));
+  renderNotePreview();
+}
+function setPath(obj,path,val){const k=path.split('.');let o=obj;for(let i=0;i<k.length-1;i++)o=o[k[i]];o[k[k.length-1]]=val}
+const NACT={
+  nAdd:a=>{const s=newSection(a.dataset.t);S.noteDraft.sections.push(s);persist();renderNotes();const el=$('#sec-'+s.id);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},
+  nMove:a=>{const L=S.noteDraft.sections,i=+a.dataset.si,j=i+ +a.dataset.d;if(j<0||j>=L.length)return;[L[i],L[j]]=[L[j],L[i]];persist();renderNotes()},
+  nDup:a=>{const L=S.noteDraft.sections,i=+a.dataset.si,c=clone(L[i]);c.id=uid();L.splice(i+1,0,c);persist();renderNotes()},
+  nDel:async a=>{const i=+a.dataset.si;if(!await confirmBox(`Delete this ${SEC_LABEL[S.noteDraft.sections[i].type].toLowerCase()} section?`,{ok:'Delete',danger:true}))return;S.noteDraft.sections.splice(i,1);persist();renderNotes()},
+  nAddRow:a=>{S.noteDraft.sections[+a.dataset.si].rows.push({label:'Label',text:'- '});persist();renderNotes()},
+  nDelRow:a=>{S.noteDraft.sections[+a.dataset.si].rows.splice(+a.dataset.i,1);persist();renderNotes()},
+  nAddCell:a=>{const s=S.noteDraft.sections[+a.dataset.si];for(let k=0;k<(+a.dataset.n||1);k++)s.cells.push(blankCell());persist();renderNotes()},
+  nDelCell:a=>{const s=S.noteDraft.sections[+a.dataset.si];s.cells.splice(+a.dataset.i,1);persist();renderNotes()},
+  nAddPair:a=>{S.noteDraft.sections[+a.dataset.si].pairs.push({left:'',right:'',leftAns:'',rightAns:''});persist();renderNotes()},
+  nDelPair:a=>{S.noteDraft.sections[+a.dataset.si].pairs.splice(+a.dataset.i,1);persist();renderNotes()},
+  nCellImg:async a=>{const [f]=await pickFile('image/*');if(!f)return;S.noteDraft.sections[+a.dataset.si].cells[+a.dataset.i].img=await imageToData(f);persist();renderNotes()},
+  nCellImgRm:a=>{S.noteDraft.sections[+a.dataset.si].cells[+a.dataset.i].img='';persist();renderNotes()},
+  nPrint:()=>{fitN();if(FRAMED)printFromFrame($('#npages'),S.noteDraft.title);else window.print()},
+  nSave:()=>{const c=clone(S.noteDraft);c.id=uid();c.updated=Date.now();S.notes.push(c);S.noteDraft.id=c.id;persist();renderNotes();toast(`Saved a new copy of “${plain(c.title)}”`)},
+  nUpdate:()=>{const n=S.noteDraft,i=S.notes.findIndex(x=>x.id===n.id);if(i<0)return NACT.nSave();n.updated=Date.now();S.notes[i]=clone(n);persist();renderNotes();toast(`Updated “${plain(n.title)}”`)},
+  nNew:async()=>{if(!S.noteDraft.id&&!await confirmBox('Start new guided notes? This sheet hasn’t been saved and will be cleared.',{ok:'Start new',danger:true}))return;S.noteDraft=newNote();persist();renderNotes()},
+  openNote:a=>{S.noteDraft=Object.assign(newNote(),clone(S.notes.find(x=>x.id===a.dataset.id)));persist();UI.view='notes';render();window.scrollTo(0,0)},
+  dupNote:a=>{const t=clone(S.notes.find(x=>x.id===a.dataset.id));t.id=uid();t.title+=' (copy)';t.updated=Date.now();S.notes.push(t);persist();render()},
+  delNote:async a=>{const t=S.notes.find(x=>x.id===a.dataset.id);if(!await confirmBox(`Delete this saved copy of “${esc(plain(t.title))}”?`,{ok:'Delete',danger:true}))return;S.notes=S.notes.filter(x=>x!==t);if(S.noteDraft.id===t.id)S.noteDraft.id=null;persist();render()},
+};
 
 /* ================= modals ================= */
 function openModal(html,wide){const m=$('#modal');m.innerHTML=`<div class="mbox ${wide?'wide':''}">${html}</div>`;m.classList.add('on');document.body.style.overflow='hidden';return $('.mbox',m)}
@@ -845,14 +1143,14 @@ function framedHelp(){
   $('#fhTry').onclick=()=>{closeModal();window.print()};$('#fhNo').onclick=closeModal;
 }
 // Opens the finished pages in a new window and prints from there, which works in most embeds.
-function printFromFrame(){
-  const pages=$('#pages');if(!pages)return;
+function printFromFrame(el,title){
+  const pages=el||$('#pages');if(!pages)return;
   let w=null;try{w=window.open('','_blank')}catch(e){}
   if(!w)return framedHelp();
   const css=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
   const links=[...document.querySelectorAll('link[rel=stylesheet]')].map(l=>`<link rel="stylesheet" href="${l.href}">`).join('');
   w.document.open();
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(plain(S.draft.title))}</title>${links}<style>${css}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(plain(title||S.draft.title))}</title>${links}<style>${css}
     body{background:#e9e4ef!important}#pages{zoom:1!important;padding:20px 0}#pages .page{margin:0 auto 20px;box-shadow:0 3px 14px rgba(0,0,0,.15)}
     .pbar{position:sticky;top:0;z-index:5;display:flex;gap:14px;align-items:center;justify-content:center;padding:10px;background:#fff;border-bottom:1px solid #ddd;font:13px Poppins,sans-serif}
     @media print{.pbar{display:none!important}#pages{padding:0}#pages .page{margin:0;box-shadow:none}}</style></head>
@@ -882,12 +1180,13 @@ async function syncPull(){
   const r=await gh('GET',fileUrl(),null,true);if(!r.ok)throw new Error('GitHub said '+r.status);
   return {data:JSON.parse(await r.text()),sha:meta.sha};
 }
-const syncPayload=()=>({app:'miranda-test-maker',version:1,updated:S.updated||Date.now(),banks:S.banks,tests:S.tests,draft:S.draft});
-function applyRemote(d){S.banks=d.banks||[];S.tests=d.tests||[];S.draft=Object.assign(newDraft(),d.draft||{});S.updated=d.updated||Date.now();reindex();if(!S.banks.some(b=>b.id===UI.bankId))UI.bankId=S.banks[0]&&S.banks[0].id;if(DB.db)DB.set('state',S).catch(()=>{})}
+const syncPayload=()=>({app:'miranda-test-maker',version:1,updated:S.updated||Date.now(),banks:S.banks,tests:S.tests,draft:S.draft,notes:S.notes,noteDraft:S.noteDraft});
+function applyRemote(d){S.banks=d.banks||[];S.tests=d.tests||[];S.notes=d.notes||S.notes||[];if(d.noteDraft)S.noteDraft=Object.assign(newNote(),d.noteDraft);S.draft=Object.assign(newDraft(),d.draft||{});S.updated=d.updated||Date.now();reindex();if(!S.banks.some(b=>b.id===UI.bankId))UI.bankId=S.banks[0]&&S.banks[0].id;if(DB.db)DB.set('state',S).catch(()=>{})}
 function mergeRemote(d){ // only used if two computers saved at the same moment: keep everything from both
   (d.banks||[]).forEach(rb=>{const lb=S.banks.find(b=>b.id===rb.id);if(!lb){S.banks.push(rb);return}
     (rb.questions||[]).forEach(q=>{if(!lb.questions.some(x=>x.id===q.id))lb.questions.push(q)})});
-  (d.tests||[]).forEach(t=>{if(!S.tests.some(x=>x.id===t.id))S.tests.push(t)});reindex();
+  (d.tests||[]).forEach(t=>{if(!S.tests.some(x=>x.id===t.id))S.tests.push(t)});
+  (d.notes||[]).forEach(t=>{if(!S.notes.some(x=>x.id===t.id))S.notes.push(t)});reindex();
 }
 function syncStatusText(){
   if(SYNC.state==='error')return `<span style="color:var(--pink-d)">⚠ ${esc(SYNC.err||'Could not reach GitHub.')}</span>`;
@@ -973,6 +1272,7 @@ function importPayload(data){
     (data.tests||[]).forEach(t=>t.items.forEach(it=>{if(map[it.qid])it.qid=map[it.qid]}));
   });
   (data.tests||[]).forEach(t=>{if(S.tests.some(x=>x.id===t.id))t.id=uid();S.tests.push(t)});
+  (data.notes||[]).forEach(t=>{if(S.notes.some(x=>x.id===t.id))t.id=uid();S.notes.push(t)});
   persist();return {nb,nq,nt:(data.tests||[]).length};
 }
 const ACT={
@@ -1017,11 +1317,12 @@ const ACT={
   syncGo:()=>syncConnect(),
   syncNow:async()=>{SYNC.dirty?await syncPush():await syncCheck();if(SYNC.state==='ok')toast('Synced with GitHub')},
   syncOff:async()=>{if(!await confirmBox('Stop syncing this computer? Your work stays here and on GitHub. You can reconnect any time.',{ok:'Disconnect'}))return;SYNC.cfg=null;SYNC.sha=null;SYNC.dirty=false;syncSaveCfg();setSync('off');renderHelp()},
-  backup:()=>{download(`test-maker-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'miranda-test-maker',version:1,banks:S.banks,tests:S.tests}));toast('Backup downloaded')},
+  backup:()=>{download(`test-maker-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'miranda-test-maker',version:1,banks:S.banks,tests:S.tests,notes:S.notes}));toast('Backup downloaded')},
   restore:async()=>{const [f]=await pickFile('.json');if(!f)return;try{const data=JSON.parse(await readText(f));const how=await choose('Restore backup','Replace everything here with this backup, or combine it with what you already have?',[{label:'Cancel',value:null,cls:'ghost'},{label:'Combine',value:'merge'},{label:'Replace everything',value:'replace',cls:'danger'}]);if(!how)return;
-    if(how==='replace'){S.banks=[];S.tests=[];reindex()}const r=importPayload(data);UI.bankId=S.banks[0]&&S.banks[0].id;toast(`Restored ${r.nb} banks, ${r.nq} questions, ${r.nt} saved`);render()}catch(e){toast('That file couldn’t be read as a backup')}},
+    if(how==='replace'){S.banks=[];S.tests=[];S.notes=[];reindex()}const r=importPayload(data);UI.bankId=S.banks[0]&&S.banks[0].id;toast(`Restored ${r.nb} banks, ${r.nq} questions, ${r.nt} saved`);render()}catch(e){toast('That file couldn’t be read as a backup')}},
   csvTemplate:()=>download('question-bank-template.csv','question,answer,size,points,tags,choices,image\n"Solve for $x$: $2x + 3 = 11$",$x = 4$,half,2,solving,,\n"What is the slope of $y = 3x - 1$?",B,half,1,slope,$1$|$3$|$-1$|$0$,\n"Explain how you would solve $\\frac{x}{4} = 7$.",$x = 28$,full,3,solving; reasoning,,\n','text/csv'),
 };
+Object.assign(ACT,NACT);
 async function csvInto(b,f){
   const rows=parseCSV(await readText(f));if(rows.length<2)return toast('CSV looks empty');
   const H=rows[0].map(h=>h.trim().toLowerCase());
@@ -1040,6 +1341,7 @@ async function csvInto(b,f){
 document.addEventListener('click',e=>{const a=e.target.closest('[data-act]');if(!a)return;if(a.tagName==='A')e.preventDefault();ACT[a.dataset.act]&&ACT[a.dataset.act](a,e)});
 document.addEventListener('input',e=>{
   const t=e.target;
+  if(t.dataset.np||t.dataset.nb){const v=t.type==='checkbox'?t.checked:(t.dataset.num?+t.value:t.value);if(t.dataset.np)setPath(S.noteDraft.sections,t.dataset.np,v);else S.noteDraft[t.dataset.nb]=v;persist();if(t.dataset.re)renderNotes();else schedNP();return}
   if(t.dataset.bind){S.draft[t.dataset.bind]=t.type==='checkbox'?t.checked:t.value;persist();renderPreview();if(t.dataset.bind==='font'||t.dataset.bind==='printMode'){} }
   else if(t.dataset.ui){UI[t.dataset.ui]=t.value;const pos=t.selectionStart;render();const n=$(`[data-ui="${t.dataset.ui}"]`);if(n&&t.type==='search'){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}}
 });
@@ -1050,8 +1352,9 @@ document.addEventListener('change',e=>{const t=e.target;if(t.dataset.sort){UI[t.
   try{await DB.open();const st=await DB.get('state');if(st&&st.banks){S=Object.assign({banks:[],tests:[],draft:newDraft()},st);S.draft=Object.assign(newDraft(),S.draft)}else{sample();await DB.set('state',S)}
     if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
   }catch(e){sample();toast('Heads up: this browser isn’t saving data. Use Backup to keep your work.')}
+  if(!Array.isArray(S.notes))S.notes=[];S.noteDraft=S.noteDraft?Object.assign(newNote(),S.noteDraft):sampleNote();
   reindex();UI.bankId=UI.bankId||(S.banks[0]&&S.banks[0].id);
-  const h=location.hash.slice(1);if(['banks','build','saved','help'].includes(h))UI.view=h;
+  const h=location.hash.slice(1);if(['banks','build','notes','saved','help'].includes(h))UI.view=h;
   render();
   if(SYNC.cfg){setSync('ok');syncCheck(true)}
   if(document.fonts)document.fonts.ready.then(()=>{if(UI.view==='build')fitPreview()});
